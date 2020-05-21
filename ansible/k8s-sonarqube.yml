@@ -1,0 +1,46 @@
+- hosts: k8smaster
+  user: cloudadmin
+  become: true
+  tasks:
+
+   - name: Setup Sonarqube Namespace. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/F1re4fect/my-k8s/master/kube/sonarqube/sonarqube-ns.yml >> sonarqube_ns.log
+     args:
+       chdir: $HOME
+       creates: sonarqube_ns.log
+
+   - name: Setup Sonarqube Service. Use log to prevent second installation
+     shell: kubectl create secret generic postgres-pwd --from-literal=password=Password -n ns-sonarqube >> sonarqube_sec.log
+     args:
+       chdir: $HOME
+       creates: sonarqube_sec.log
+
+   - name: Setup Sonarqube Deployment. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/F1re4fect/my-k8s/master/kube/sonarqube/sonar-pvc-postgres.yml >> sonar_pvc_postgres.log
+     args:
+       chdir: $HOME
+       creates: sonar_pvc_postgres.log
+
+   - name: Setup Sonarqube Deployment. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/F1re4fect/my-k8s/master/kube/sonarqube/sonar-postgres-service.yml >> sonar_svc_postgres.log
+     args:
+       chdir: $HOME
+       creates: sonar_svc_postgres.log
+
+   - name: Setup Sonarqube Deployment. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/F1re4fect/my-k8s/master/kube/sonarqube/sonar-postgres-deployment.yml >> sonar_dep_postgres.log
+     args:
+       chdir: $HOME
+       creates: sonar_dep_postgres.log
+
+   - name: Setup Sonarqube Deployment. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/F1re4fect/my-k8s/master/kube/sonarqube/sonarqube-deployment.yml >> sonarqube_deploy.log
+     args:
+       chdir: $HOME
+       creates: sonarqube_deploy.log
+
+   - name: Setup Sonarqube Service. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/F1re4fect/my-k8s/master/kube/sonarqube/sonarqube-service.yml >> sonarqube_service.log
+     args:
+       chdir: $HOME
+       creates: sonarqube_service.log
