@@ -4,6 +4,7 @@ metadata:
   namespace: ns-sonarqube
   name: claim-postgres
 spec:
+  storageClassName: managed-nfs-storage
   accessModes:
     - ReadWriteOnce
   resources:
