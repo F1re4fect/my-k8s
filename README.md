@@ -23,7 +23,11 @@ ansible-playbook -i hosts.yml k8s-metallb.yml
 
 ansible-playbook -i hosts.yml k8s-istio.yml
 
+ansible-playbook -i hosts.yml k8s-ecr-renew.yml
+
 ansible-playbook -i hosts.yml k8s-jenkins.yml
+
+ansible-playbook -i hosts.yml k8s-sonarqube.yml
 
 #### NOTES:
 
