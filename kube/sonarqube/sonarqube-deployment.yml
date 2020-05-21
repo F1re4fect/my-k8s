@@ -16,7 +16,7 @@ spec:
         name: sonarqube
     spec:
       containers:
-        - image: sonarqube:7.9.3-community
+        - image: sonarqube:8.3.1-community
           name: sonarqube
           env:
             - name: SONARQUBE_JDBC_PASSWORD
