@@ -1,0 +1,21 @@
+- hosts: k8smaster
+  user: cloudadmin
+  become: true
+  tasks:
+
+   - name: Setup Jenkins Namespace. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/carterfieldslabs/k8s/master/jenkins/jenkins-namespace.yml >> jenkins_ns.log
+     args:
+       chdir: $HOME
+       creates: jenkins_ns.log
+
+# https://docs.ansible.com/ansible/latest/modules/helm_module.html
+
+   - name: Run Helm update
+     shell: helm repo update
+
+   - name: Install Jenkins. Use log to prevent second installation
+     shell: helm install jenkins -f https://raw.githubusercontent.com/carterfieldslabs/k8s/master/jenkins/jenkins-values.yaml stable/jenkins --namespace jenkins >> jenkins.log
+     args:
+       chdir: $HOME
+       creates: jenkins.log

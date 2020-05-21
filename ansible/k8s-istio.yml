@@ -1,0 +1,32 @@
+- hosts: k8smaster
+  user: cloudadmin
+  become: true
+  tasks:
+
+   - name: Download istioctl
+     shell: curl -s -L https://istio.io/downloadIstio | sh -
+
+   - name: Copy admin.conf to the root user's kube directory
+     copy:
+       src: /home/cloudadmin/istio-1.5.4/bin/istioctl
+       dest: /usr/local/bin/
+       mode: a+x
+       remote_src: yes
+
+   - name: Setup ISTIO. Use log to prevent second installation
+     become: yes
+     remote_user: cloudadmin
+     become_method: sudo
+     shell: istioctl manifest apply --set profile=demo >> istio.log
+     args:
+       chdir: $HOME
+       creates: istio.log
+
+   - name: Setup ISTIO label
+     become: yes
+     remote_user: cloudadmin
+     become_method: sudo
+     shell: kubectl label namespace default istio-injection=enabled >> istio-label.log
+     args:
+       chdir: $HOME
+       creates: istio-label.log

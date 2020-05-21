@@ -1,0 +1,78 @@
+- hosts: k8smaster
+  user: cloudadmin
+  become: true
+  tasks:
+   - name: Install kubectl on Master
+     apt:
+       name: kubectl
+       state: present
+
+   - name: Initialize Cluster
+#     shell: kubeadm init --control-plane-endpoint "192.168.222.1" --upload-certs --pod-network-cidr=10.244.0.0/16 >> cluster_init.log
+     shell: kubeadm init --pod-network-cidr=10.244.0.0/16 >> cluster_init.log
+     args:
+       chdir: $HOME
+       creates: cluster_init.log
+
+   - name: Create .kube directory for root
+     file:
+       path: $HOME/.kube
+       state: directory
+       owner: root
+       group: root
+       mode: 0755
+
+   - name: Create .kube directory for cloudadmin
+     file:
+       path: $HOME/.kube
+       state: directory
+       owner: cloudadmin
+       group: cloudadmin
+       mode: 0755
+     become: yes
+     become_user: cloudadmin
+
+   - name: Copy admin.conf to the root user's kube directory
+     copy:
+       src: /etc/kubernetes/admin.conf
+       dest: $HOME/.kube/config
+       remote_src: yes
+
+   - name: Copy admin.conf to the cloudadmin user's kube directory
+     become: yes
+     remote_user: cloudadmin
+     become_method: sudo
+     copy:
+       src: /etc/kubernetes/admin.conf
+       dest: /home/cloudadmin/.kube/config
+       remote_src: yes
+       owner: cloudadmin
+       group: cloudadmin
+
+   - name: Setup Calico. Use log to prevent second installation
+     shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml >> calico_setup.log
+     args:
+       chdir: $HOME
+       creates: calico_setup.log
+
+   - name: Create token to join cluster
+     shell: kubeadm token create --print-join-command
+     register: join_command_raw
+
+   - name: Set join command as fact
+     set_fact:
+       join_command: "{{ join_command_raw.stdout_lines[0] }}"
+
+- hosts: k8snodes
+  user: cloudadmin
+  become: true
+  tasks:
+
+    - name: Wait for master's port 6443
+      wait_for: "host={{ hostvars['k8s-master-1']['ansible_default_ipv4']['address'] }} port=6443 timeout=1"
+
+    - name: Join the cluster. Use log to prevent joining twice
+      shell: "{{ hostvars['k8s-master-1'].join_command }} >> node_join.log"
+      args:
+        chdir: $HOME
+        creates: node

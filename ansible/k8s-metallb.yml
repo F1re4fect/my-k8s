@@ -1,0 +1,33 @@
+- hosts: k8smaster
+  user: cloudadmin
+  become: true
+  tasks:
+#   - name: Ensure SELinux is set to enforcing mode
+#     lineinfile:
+#     path: /etc/selinux/config
+#     regexp: '^SELINUX='
+#     line: SELINUX=enforcing
+
+   - name: Setup Metallb Namespace. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.3/manifests/namespace.yaml >> metallb_ns.log
+     args:
+       chdir: $HOME
+       creates: metallb_ns.log
+
+   - name: Setup Metallb. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.3/manifests/metallb.yaml >> metallb.log
+     args:
+       chdir: $HOME
+       creates: metallb.log
+
+   - name: Setup Metallb secret. Use log to prevent second installation
+     shell: kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)" >> metallb_secret.log
+     args:
+       chdir: $HOME
+       creates: metallb_secret.log
+
+   - name: Setup Metallb. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/carterfieldslabs/k8s/master/metallb/metallb-config.yaml >> metallb_cm.log
+     args:
+       chdir: $HOME
+       creates: metallb_cm.log

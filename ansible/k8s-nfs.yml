@@ -1,0 +1,21 @@
+- hosts: k8smaster
+  user: cloudadmin
+  become: true
+  tasks:
+   - name: Setup nfs rbac. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/carterfieldslabs/k8s/master/nfs-provisioner/rbac.yml >> nfs_rbac.log
+     args:
+       chdir: $HOME
+       creates: nfs_rbac.log
+
+   - name: Setup nfs class. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/carterfieldslabs/k8s/master/nfs-provisioner/class.yml >> nfs_class.log
+     args:
+       chdir: $HOME
+       creates: nfs_class.log
+
+   - name: Setup nfs deploy. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/carterfieldslabs/k8s/master/nfs-provisioner/deployment.yml >> nfs_deploy.log
+     args:
+       chdir: $HOME
+       creates: nfs_deploy.log

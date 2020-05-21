@@ -1,0 +1,22 @@
+- hosts: k8smaster
+  user: cloudadmin
+  become: true
+  tasks:
+
+   - name: Setup ecr-renew Namespace. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/F1re4fect/my-k8s/master/kube/aws-ecr/ecr-renew-namespace.yml >> ecr_renew_ns.log
+     args:
+       chdir: $HOME
+       creates: ecr_renew_ns.log
+
+   - name: Setup ecr-renew Service. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/F1re4fect/my-k8s/master/kube/aws-ecr/service-account.yml >> ecr_renew_svc.log
+     args:
+       chdir: $HOME
+       creates: ecr_renew_svc.log
+
+   - name: Setup ecr-renew Deployment. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/F1re4fect/my-k8s/master/kube/aws-ecr/deploy.yml >> ecr_renew_deploy.log
+     args:
+       chdir: $HOME
+       creates: ecr_renew_deploy.log

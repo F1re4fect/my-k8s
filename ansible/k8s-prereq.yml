@@ -1,0 +1,53 @@
+- hosts: all
+  user: cloudadmin
+  become: true
+  tasks:
+   - name: Get Kubernetes apt-key
+     apt_key:
+       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+       state: present
+
+   - name: Add Kubernetes APT repository
+     apt_repository:
+      repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+      state: present
+      filename: 'kubernetes'
+
+   - name: Install required software
+     apt: 
+       name: "{{ packages }}"
+       update_cache: true
+       state: present
+     vars:
+       packages:
+       - docker.io
+       - kubelet
+       - kubeadm
+       - nfs-common
+
+   - name: enable Docker service
+     systemd:
+       name: docker
+       enabled: yes
+
+- hosts: k8smaster
+  user: cloudadmin
+  become: true
+  tasks:
+   - name: Install kubectl on Master
+     apt:
+       name: kubectl
+       state: present
+
+   - name: Download Helm
+     shell: wget -c https://get.helm.sh/helm-v3.2.1-linux-amd64.tar.gz -O - | tar -xz
+
+   - name: Copy admin.conf to the root user's kube directory
+     copy:
+       src: /home/cloudadmin/linux-amd64/helm
+       dest: /usr/local/bin/
+       mode: a+x
+       remote_src: yes
+
+   - name: Add Helm Stable repo
+     shell: helm repo add stable https://kubernetes-charts.storage.googleapis.com
