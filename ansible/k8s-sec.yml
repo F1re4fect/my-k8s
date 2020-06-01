@@ -1,0 +1,11 @@
+   
+- hosts: k8smaster
+  user: cloudadmin
+  become: true
+  tasks:
+  
+   - name: Setup kube-hunter Job. Use log to prevent second installation
+     shell: kubectl apply -f https://raw.githubusercontent.com/aquasecurity/kube-hunter/master/job.yaml >> kube-hunter.log
+     args:
+       chdir: $HOME
+       creates: kube-hunter.log
