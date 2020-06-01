@@ -5,7 +5,7 @@
   tasks:
   
     - name: Setup kube-sec Namespace. Use log to prevent second installation
-     shell: kubectl apply -f https://raw.githubusercontent.com/carterfieldslabs/k8s/master/kube-sec/kube-sec-namespace.yml >> kube-sec-ns.log
+     shell: kubectl apply -f https://raw.githubusercontent.com/F1re4fect/my-k8s/master/kube/kube-sec/kube-sec-namespace.yml >> kube-sec-ns.log
      args:
        chdir: $HOME
        creates: kube-sec-ns.log
