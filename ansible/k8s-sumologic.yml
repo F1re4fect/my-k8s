@@ -9,16 +9,16 @@
        chdir: $HOME
        creates: sumo-repo.log
   
-   - name: Setup kube-hunter Job. Use log to prevent second installation
+   - name: Helm Repo Updates
      shell: helm repo update
 
-   - name: Setup kube-bench Job. Use log to prevent second installation
+   - name: Create Sumologic namespace. Use log to prevent second installation
      shell: kubectl create namespace sumologic >> sumo-ns.log
      args:
        chdir: $HOME
        creates: sumo-ns.log
        
-   - name: Setup kube-bench Job. Use log to prevent second installation
+   - name: Deploy Sumologic. Use log to prevent second installation
      shell: helm install sumologic sumologic/sumologic --namespace sumologic --set sumologic.accessId=IDKEY --set sumologic.accessKey=BIGKEY  --set sumologic.clusterName="kubernetes" >> sumo-deploy.log
      args:
        chdir: $HOME
