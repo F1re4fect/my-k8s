@@ -2,7 +2,7 @@
   user: cloudadmin
   become: true
   tasks:
-  
+  # https://github.com/SumoLogic/sumologic-kubernetes-collection/blob/master/deploy/docs/Non_Helm_Installation.md
    - name: Add Helm Repo for Sumologic. Use log to prevent second installation
      shell: helm repo add sumologic https://sumologic.github.io/sumologic-kubernetes-collection >> sumo-repo.log
      args:
