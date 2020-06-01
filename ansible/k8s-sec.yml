@@ -11,12 +11,12 @@
        creates: kube-sec-ns.log
   
    - name: Setup kube-hunter Job. Use log to prevent second installation
-     shell: kubectl apply -f https://raw.githubusercontent.com/aquasecurity/kube-hunter/master/job.yaml >> kube-hunter.log
+     shell: kubectl apply -f https://raw.githubusercontent.com/aquasecurity/kube-hunter/master/job.yaml --namespace=kube-sec >> kube-hunter.log
      args:
        chdir: $HOME
        creates: kube-hunter.log
    - name: Setup kube-bench Job. Use log to prevent second installation
-     shell: kubectl apply -f https://raw.githubusercontent.com/aquasecurity/kube-bench/master/job.yaml >> kube-bench.log
+     shell: kubectl apply -f https://raw.githubusercontent.com/aquasecurity/kube-bench/master/job.yaml --namespace=kube-sec >> kube-bench.log
      args:
        chdir: $HOME
        creates: kube-bench.log
