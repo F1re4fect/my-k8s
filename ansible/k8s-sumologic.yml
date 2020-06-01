@@ -1,0 +1,25 @@
+- hosts: k8smaster
+  user: cloudadmin
+  become: true
+  tasks:
+  
+   - name: Add Helm Repo for Sumologic. Use log to prevent second installation
+     shell: helm repo add sumologic https://sumologic.github.io/sumologic-kubernetes-collection >> sumo-repo.log
+     args:
+       chdir: $HOME
+       creates: sumo-repo.log
+  
+   - name: Setup kube-hunter Job. Use log to prevent second installation
+     shell: helm repo update
+
+   - name: Setup kube-bench Job. Use log to prevent second installation
+     shell: kubectl create namespace sumologic >> sumo-ns.log
+     args:
+       chdir: $HOME
+       creates: sumo-ns.log
+       
+   - name: Setup kube-bench Job. Use log to prevent second installation
+     shell: helm install sumologic sumologic/sumologic --namespace sumologic --set sumologic.accessId=IDKEY --set sumologic.accessKey=BIGKEY  --set sumologic.clusterName="kubernetes" >> sumo-deploy.log
+     args:
+       chdir: $HOME
+       creates: sumo-deploy.log
